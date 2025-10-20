@@ -2,6 +2,12 @@
 name = "axum-oauth-server"
 version = "0.1.0"
 edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "OAuth2 server implementation using Axum framework"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/yourusername/axum-oauth-server"
+keywords = ["oauth2", "axum", "authentication", "google"]
+categories = ["web-programming", "authentication"]
 
 [dependencies]
 axum = "0.7"
@@ -16,3 +22,8 @@ jsonwebtoken = "9.3"
 reqwest = { version = "0.12", features = ["json"] }
 uuid = { version = "1.0", features = ["v4"] }
 dotenvy = "0.15"
+config = "0.14"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+thiserror = "1.0"
+anyhow = "1.0"

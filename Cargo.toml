@@ -16,7 +16,7 @@ oauth2 = "4.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tower = "0.4"
-tower-http = { version = "0.5", features = ["cors", "fs"] }
+tower-http = { version = "0.5", features = ["cors", "fs", "trace"] }
 tower-sessions = "0.12"
 jsonwebtoken = "9.3"
 reqwest = { version = "0.12", features = ["json"] }
@@ -24,6 +24,6 @@ uuid = { version = "1.0", features = ["v4"] }
 dotenvy = "0.15"
 config = "0.14"
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter", "ansi"] }
 thiserror = "1.0"
 anyhow = "1.0"

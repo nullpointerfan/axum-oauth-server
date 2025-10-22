@@ -3,24 +3,25 @@ mod error;
 mod handlers;
 mod models;
 
-use axum::{routing::get, Router};
+use axum::{http::Request, response::Response, routing::get, Router};
 use dotenvy::dotenv;
-use std::net::SocketAddr;
-use tower_http::cors::CorsLayer;
+use std::{net::SocketAddr, time::Duration};
+use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use tower_sessions::{MemoryStore, SessionManagerLayer};
+use tracing::{Span, debug};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::{config::Config, models::AppState};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize tracing
+    // Initialize tracing with ANSI colors
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| "axum_oauth_server=debug,tower_http=debug".into()),
         )
-        .with(tracing_subscriber::fmt::layer())
+        .with(tracing_subscriber::fmt::layer().with_ansi(true))
         .init();
 
     // Load environment variables
@@ -53,6 +54,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/auth/login", get(handlers::auth_login))
         .route("/auth/callback", get(handlers::auth_callback))
         .route("/protected", get(handlers::protected_route))
+        .layer(
+            TraceLayer::new_for_http()
+                .on_request(|request: &Request<_>, _span: &Span| {
+                    debug!("started processing request: {} {}", request.method(), request.uri());
+                })
+                .on_response(|response: &Response, latency: Duration, _span: &Span| {
+                    debug!("finished processing request: status={} latency={} ns", response.status(), latency.as_nanos());
+                }),
+        )
         .layer(CorsLayer::permissive())
         .layer(session_layer)
         .layer(axum::Extension(state));
